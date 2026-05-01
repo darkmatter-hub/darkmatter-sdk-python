@@ -1,8 +1,8 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="darkmatter",
-    version="0.1.0",
+    name="darkmatter-sdk",
+    version="1.4.1",
     description="Replay, fork, and verify any AI workflow. Execution record for AI agent pipelines.",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
@@ -16,12 +16,16 @@ setup(
     },
     packages=find_packages(),
     python_requires=">=3.8",
-    install_requires=[],  # zero dependencies — stdlib only
+    install_requires=["requests>=2.28.0"],
     extras_require={
-        "langgraph":  ["langgraph>=0.1.0"],
-        "anthropic":  ["anthropic>=0.20.0"],
-        "openai":     ["openai>=1.0.0"],
-        "all":        ["langgraph>=0.1.0", "anthropic>=0.20.0", "openai>=1.0.0"],
+        "langgraph":   ["langgraph>=0.1.0"],
+        "anthropic":   ["anthropic>=0.20.0"],
+        "openai":      ["openai>=1.0.0"],
+        "crewai":      ["crewai>=0.60.0"],
+        "bedrock":     ["boto3>=1.28.0"],
+        "google-adk":  ["google-adk>=0.4.0"],
+        "all":         ["langgraph>=0.1.0", "anthropic>=0.20.0", "openai>=1.0.0",
+                        "crewai>=0.60.0", "boto3>=1.28.0", "google-adk>=0.4.0"],
     },
     entry_points={
         "console_scripts": [

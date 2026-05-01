@@ -287,8 +287,8 @@ def _sign_envelope(envelope: dict) -> tuple[Optional[str], Optional[str]]:
 # ─────────────────────────────────────────────────────────────────────────────
 
 def commit(
-    to_agent_id:  str,
-    payload:      dict,
+    to_agent_id:  Optional[str] = None,
+    payload:      Optional[dict] = None,
     parent_id:    Optional[str] = None,
     trace_id:     Optional[str] = None,
     branch_key:   Optional[str] = None,
@@ -300,6 +300,10 @@ def commit(
     """
     Commit agent context to DarkMatter.
 
+    to_agent_id: recipient agent ID. Defaults to the agent_id set in configure()
+                 or DARKMATTER_AGENT_ID env var — so dm.commit(payload={...}) works
+                 out of the box when configured.
+
     Phase 1 guarantees (client-side):
       - payload_hash computed locally via canonical serialization
       - integrity_hash computed over full envelope (payload + parent + agent + key + timestamp)
@@ -308,6 +312,9 @@ def commit(
     """
     from datetime import datetime, timezone
     cfg = _cfg()
+    to_agent_id = to_agent_id or cfg.get('agent_id')
+    if not payload:
+        raise ValueError('payload is required')
 
     resolved_parent = parent_id or (auto_thread and _config.get('last_ctx_id') or None)
     ts = timestamp or datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')

@@ -14,6 +14,7 @@ Usage::
     print(client.last_ctx_id)
 """
 
+import os
 from darkmatter.client import DarkMatter
 
 
@@ -84,6 +85,48 @@ class _TrackedOpenAIClient:
 
     def __getattr__(self, name):
         return getattr(self._client, name)
+
+
+class OpenAI:
+    """
+    Drop-in DarkMatter-instrumented OpenAI client.
+
+    Usage::
+
+        from darkmatter.integrations.openai import OpenAI
+
+        client = OpenAI(
+            dm_api_key = "dm_sk_...",   # or set DARKMATTER_API_KEY
+            api_key    = "sk-...",      # standard OpenAI key
+            dm_agent_id = "dm_...",     # or set DARKMATTER_AGENT_ID
+        )
+        response = client.chat.completions.create(
+            model="gpt-4o",
+            messages=[{"role": "user", "content": "Approve this refund?"}],
+        )
+        # Every call is automatically committed to DarkMatter
+    """
+
+    def __init__(self, api_key: str = None, dm_api_key: str = None,
+                 dm_agent_id: str = None, dm_signing=None, **kwargs):
+        try:
+            import openai as _openai
+        except ImportError:
+            raise ImportError(
+                "openai not installed. Run: pip install 'darkmatter-sdk[openai]'"
+            )
+        base_client = _openai.OpenAI(api_key=api_key, **kwargs)
+        agent_id = dm_agent_id or os.getenv('DARKMATTER_AGENT_ID', 'default')
+        dm_instance = DarkMatter(api_key=dm_api_key)
+        self._inner = _TrackedOpenAIClient(base_client, dm_instance, agent_id, agent_id)
+        self.chat = self._inner.chat
+
+    @property
+    def last_ctx_id(self):
+        return self._inner.last_ctx_id
+
+    def __getattr__(self, name):
+        return getattr(self._inner, name)
 
 
 def dm_client(openai_client, agent_id: str, to_agent_id: str,

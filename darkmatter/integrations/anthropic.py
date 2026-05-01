@@ -25,6 +25,7 @@ Usage::
     print(client.last_ctx_id)  # ctx_1234567890_abc123
 """
 
+import os
 from darkmatter.client import DarkMatter
 
 
@@ -100,6 +101,48 @@ class _TrackedClient:
 
     def __getattr__(self, name):
         return getattr(self._client, name)
+
+
+class Anthropic:
+    """
+    Drop-in DarkMatter-instrumented Anthropic client.
+
+    Usage::
+
+        from darkmatter.integrations.anthropic import Anthropic
+
+        client = Anthropic(
+            dm_api_key = "dm_sk_...",   # or set DARKMATTER_API_KEY
+            api_key    = "sk-ant-...",  # standard Anthropic key
+            dm_agent_id = "dm_...",     # or set DARKMATTER_AGENT_ID
+        )
+        response = client.messages.create(
+            model="claude-sonnet-4-6", max_tokens=1024,
+            messages=[{"role": "user", "content": "Approve this refund?"}],
+        )
+        # Every call is automatically committed to DarkMatter
+    """
+
+    def __init__(self, api_key: str = None, dm_api_key: str = None,
+                 dm_agent_id: str = None, dm_signing=None, **kwargs):
+        try:
+            import anthropic as _anthropic
+        except ImportError:
+            raise ImportError(
+                "anthropic not installed. Run: pip install 'darkmatter-sdk[anthropic]'"
+            )
+        base_client = _anthropic.Anthropic(api_key=api_key, **kwargs)
+        agent_id = dm_agent_id or os.getenv('DARKMATTER_AGENT_ID', 'default')
+        dm_instance = DarkMatter(api_key=dm_api_key)
+        self._inner = _TrackedClient(base_client, dm_instance, agent_id, agent_id)
+        self.messages = self._inner.messages
+
+    @property
+    def last_ctx_id(self):
+        return self._inner.last_ctx_id
+
+    def __getattr__(self, name):
+        return getattr(self._inner, name)
 
 
 def dm_client(anthropic_client, agent_id: str, to_agent_id: str,

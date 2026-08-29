@@ -82,7 +82,17 @@ def canonicalize(value) -> str:
 
     if isinstance(value, dict):
         pairs = []
-        for k in sorted(value.keys()):
+        # RFC 8785 3.2.3 orders keys by UTF-16 code unit, not code point. The two
+        # agree across the BMP and disagree above it, because an astral character
+        # encodes to a surrogate pair: U+1F600 becomes D83D DE00, which sorts
+        # below U+FF01 in UTF-16 and above it by code point.
+        #
+        # This was plain sorted(), which is code point. DarkMatter's server hashes
+        # with JavaScript's Array.prototype.sort, which is UTF-16, so a payload
+        # with an emoji key hashed one way here and another there and the commit
+        # was rejected as a hash mismatch. Client-side hashing is the product's
+        # central claim, so the two must agree exactly.
+        for k in sorted(value.keys(), key=lambda s: s.encode('utf-16-be')):
             v = value[k]
             # Keep None (null) — drop nothing
             # (In Python there is no 'undefined' — only None which maps to JSON null)

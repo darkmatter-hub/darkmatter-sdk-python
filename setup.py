@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="darkmatter-sdk",
-    version="1.4.2",
+    version="1.4.5",
     description="Replay, fork, and verify any AI workflow. Execution record for AI agent pipelines.",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",

@@ -1,0 +1,17 @@
+# Python bytecode. PR #1 committed __pycache__ because this file did not exist.
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Environments and tooling
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.coverage

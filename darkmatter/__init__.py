@@ -12,7 +12,7 @@ from .client import (
 )
 from .exceptions import DarkMatterError, AuthError, NotFoundError
 
-__version__ = "1.4.2"
+__version__ = "1.4.5"
 __all__ = [
     "configure",
     "commit", "replay", "fork", "verify", "diff", "bundle", "me", "checkpoint",

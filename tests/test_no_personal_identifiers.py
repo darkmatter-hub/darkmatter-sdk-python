@@ -61,12 +61,33 @@ def test_setup_metadata_is_institutional():
     with open(os.path.join(ROOT, "setup.py"), "rb") as fh:
         setup_py = fh.read().decode("utf-8", "ignore")
     assert 'author="DarkMatter"' in setup_py, "author must be the project, not a person"
-    assert "github.com/bengunvl" not in setup_py, "links must not name a personal account"
+    # Split, for the same reason BANNED is: written whole, this line makes the
+    # scan above fail on the file that performs it.
+    personal_url = "github.com/ben" + "gunvl"
+    assert personal_url not in setup_py, "links must not name a personal account"
     assert "darkmatterhub.ai" in setup_py
+
+
+def test_readme_installs_this_package():
+    """The distribution is darkmatter-sdk; the import name is darkmatter.
+
+    README said `pip install darkmatter`, and `darkmatter` on PyPI belongs to
+    an unrelated author. Every Python reader who followed the README installed
+    a stranger's package and then hit an ImportError. This README is the long
+    description, so the wrong line was printed on the PyPI page itself.
+    """
+    with open(os.path.join(ROOT, "README.md"), "rb") as fh:
+        readme = fh.read().decode("utf-8", "ignore")
+    assert "pip install darkmatter-sdk" in readme, "README must install this distribution"
+    wrong = "pip install darkmatter" + chr(10)
+    assert wrong not in readme, (
+        "README installs the package named darkmatter, which is not ours"
+    )
 
 
 if __name__ == "__main__":
     test_no_tracked_file_names_a_person()
     test_setup_metadata_is_institutional()
-    print("no personal identifiers in tracked files; setup metadata is institutional")
+    test_readme_installs_this_package()
+    print("identifiers clean; setup metadata institutional; README installs darkmatter-sdk")
     sys.exit(0)

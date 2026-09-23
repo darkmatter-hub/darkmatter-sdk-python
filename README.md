@@ -5,7 +5,7 @@
 The execution record for AI agent pipelines. Works across any model, framework, or provider.
 
 ```bash
-pip install darkmatter
+pip install darkmatter-sdk
 darkmatter demo        # try it now — no signup required
 ```
 

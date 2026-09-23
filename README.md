@@ -161,7 +161,7 @@ for ctx in results["results"]:
 - [Documentation](https://darkmatterhub.ai/docs)
 - [Live demo](https://darkmatterhub.ai/demo)
 - [Get API key](https://darkmatterhub.ai/signup)
-- [GitHub](https://github.com/bengunvl/darkmatter)
+- [GitHub](https://github.com/darkmatter-hub/darkmatter-sdk-python)
 - [Context Passport spec](https://contextpassport.com)
 
 ## License

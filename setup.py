@@ -2,17 +2,17 @@ from setuptools import setup, find_packages
 
 setup(
     name="darkmatter-sdk",
-    version="1.4.5",
+    version="1.4.6",
     description="Replay, fork, and verify any AI workflow. Execution record for AI agent pipelines.",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
-    author="Ben Gunvl",
+    author="DarkMatter",
     author_email="hello@darkmatterhub.ai",
     url="https://darkmatterhub.ai",
     project_urls={
         "Documentation": "https://darkmatterhub.ai/docs",
-        "Source": "https://github.com/bengunvl/darkmatter",
-        "Changelog": "https://github.com/bengunvl/darkmatter/releases",
+        "Source": "https://github.com/darkmatter-hub/darkmatter-sdk-python",
+        "Changelog": "https://github.com/darkmatter-hub/darkmatter-sdk-python/releases",
     },
     packages=find_packages(),
     python_requires=">=3.8",

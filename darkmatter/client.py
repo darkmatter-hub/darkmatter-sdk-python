@@ -306,6 +306,7 @@ def commit(
     agent:        Optional[dict] = None,
     auto_thread:  bool = True,
     timestamp:    Optional[str] = None,
+    share:        bool = False,
 ) -> dict:
     """
     Commit agent context to DarkMatter.
@@ -313,6 +314,14 @@ def commit(
     to_agent_id: recipient agent ID. Defaults to the agent_id set in configure()
                  or DARKMATTER_AGENT_ID env var — so dm.commit(payload={...}) works
                  out of the box when configured.
+
+    share: publish this one record at its verify_url so anyone with the link can
+           check it, with no account. Records are private by default and
+           /r/<id> is gated on that, so the verify_url in the receipt returns
+           404 to everybody else until you pass share=True. This SDK had no way
+           to set it at all, which meant the link printed by the documented
+           quickstart could never resolve. Check receipt['verify_public'] to see
+           which you got.
 
     Phase 1 guarantees (client-side):
       - payload_hash computed locally via canonical serialization
@@ -351,6 +360,7 @@ def commit(
         **(({'branchKey':        branch_key})       if branch_key       else {}),
         **(({'eventType':        event_type})       if event_type       else {}),
         **(({'agent':            agent})            if agent            else {}),
+        **(({'share':            True})             if share            else {}),
     }
 
     r = requests.post(f'{cfg["host"]}/api/commit', json=body, headers=_headers(), timeout=10)
